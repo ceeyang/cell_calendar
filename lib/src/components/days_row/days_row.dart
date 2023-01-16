@@ -1,7 +1,6 @@
 import 'package:cell_calendar/cell_calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-
 import 'event_labels.dart';
 import 'measure_size.dart';
 
@@ -18,6 +17,8 @@ class DaysRow extends StatelessWidget {
     required this.todayMarkColor,
     required this.todayTextColor,
     required this.events,
+    this.onMoreTap,
+    this.borderColorBuilder,
   }) : super(key: key);
 
   final List<DateTime> dates;
@@ -27,6 +28,8 @@ class DaysRow extends StatelessWidget {
   final Color todayMarkColor;
   final Color todayTextColor;
   final List<CalendarEvent> events;
+  final EventLabelOnMoreTap? onMoreTap;
+  final DayBorderBuilder? borderColorBuilder;
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +44,8 @@ class DaysRow extends StatelessWidget {
             todayMarkColor: todayMarkColor,
             todayTextColor: todayTextColor,
             events: events,
+            onMoreTap: onMoreTap,
+            borderColorBuilder: borderColorBuilder,
           );
         }).toList(),
       ),
@@ -60,6 +65,8 @@ class _DayCell extends HookConsumerWidget {
     required this.todayMarkColor,
     required this.todayTextColor,
     required this.events,
+    this.onMoreTap,
+    this.borderColorBuilder,
   });
 
   final DateTime date;
@@ -69,6 +76,8 @@ class _DayCell extends HookConsumerWidget {
   final Color todayMarkColor;
   final Color todayTextColor;
   final List<CalendarEvent> events;
+  final EventLabelOnMoreTap? onMoreTap;
+  final DayBorderBuilder? borderColorBuilder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -83,10 +92,9 @@ class _DayCell extends HookConsumerWidget {
         },
         child: DecoratedBox(
           decoration: BoxDecoration(
-            border: Border(
-              top: BorderSide(color: Theme.of(context).dividerColor, width: 1),
-              right:
-                  BorderSide(color: Theme.of(context).dividerColor, width: 1),
+            border: Border.all(
+              color: borderColorBuilder?.call(date) ?? Theme.of(context).dividerColor,
+              width: 1,
             ),
           ),
           child: MeasureSize(
@@ -115,6 +123,7 @@ class _DayCell extends HookConsumerWidget {
                 EventLabels(
                   date: date,
                   events: events,
+                  onMoreTap: onMoreTap,
                 ),
               ],
             ),

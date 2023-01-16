@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-
 import 'calendar_event.dart';
 import 'components/days_of_the_week.dart';
 import 'components/days_row/days_row.dart';
+import 'components/days_row/event_labels.dart';
 import 'components/month_year_label.dart';
 import 'controllers/cell_calendar_page_controller.dart';
 import 'date_extension.dart';
@@ -13,6 +13,8 @@ typedef DaysBuilder = Widget Function(int dayIndex);
 typedef MonthYearBuilder = Widget Function(DateTime? visibleDateTime);
 
 final currentDateProvider = StateProvider((ref) => DateTime.now());
+
+typedef DayBorderBuilder = Color Function(DateTime? dateTime);
 
 /// Calendar widget like a Google Calendar
 ///
@@ -28,6 +30,8 @@ class CellCalendar extends HookConsumerWidget {
     this.daysOfTheWeekBuilder,
     this.monthYearLabelBuilder,
     this.dateTextStyle,
+    this.onCellMoreTap,
+    this.borderColorBuilder,
   });
 
   final CellCalendarPageController? cellCalendarPageController;
@@ -45,8 +49,10 @@ class CellCalendar extends HookConsumerWidget {
   final List<CalendarEvent> events;
   final void Function(DateTime firstDate, DateTime lastDate)? onPageChanged;
   final void Function(DateTime)? onCellTapped;
+  final EventLabelOnMoreTap? onCellMoreTap;
   final Color todayMarkColor;
   final Color todayTextColor;
+  final DayBorderBuilder? borderColorBuilder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -61,6 +67,8 @@ class CellCalendar extends HookConsumerWidget {
         onCellTapped: onCellTapped,
         todayMarkColor: todayMarkColor,
         todayTextColor: todayTextColor,
+        onMoreTap: onCellMoreTap,
+        borderColorBuilder: borderColorBuilder
       ),
     );
   }
@@ -78,6 +86,8 @@ class _CalendarPageView extends HookConsumerWidget {
     required this.onCellTapped,
     required this.todayMarkColor,
     required this.todayTextColor,
+    this.onMoreTap,
+    this.borderColorBuilder,
   }) : super(key: key);
   final CellCalendarPageController? cellCalendarPageController;
 
@@ -94,8 +104,10 @@ class _CalendarPageView extends HookConsumerWidget {
   final List<CalendarEvent> events;
   final void Function(DateTime firstDate, DateTime lastDate)? onPageChanged;
   final void Function(DateTime)? onCellTapped;
+  final EventLabelOnMoreTap? onMoreTap;
   final Color todayMarkColor;
   final Color todayTextColor;
+  final DayBorderBuilder? borderColorBuilder;
 
   DateTime _getFirstDay(DateTime dateTime) {
     final firstDayOfTheMonth = DateTime(dateTime.year, dateTime.month, 1);
@@ -121,6 +133,8 @@ class _CalendarPageView extends HookConsumerWidget {
                 todayMarkColor: todayMarkColor,
                 todayTextColor: todayTextColor,
                 events: events,
+                onMoreTap: onMoreTap,
+                borderColorBuilder:borderColorBuilder
               );
             },
             onPageChanged: (index) {
@@ -157,6 +171,8 @@ class _CalendarPage extends StatelessWidget {
     required this.todayMarkColor,
     required this.todayTextColor,
     required this.events,
+    this.onMoreTap,
+    this.borderColorBuilder,
   }) : super(key: key);
 
   final DateTime visiblePageDate;
@@ -165,7 +181,9 @@ class _CalendarPage extends StatelessWidget {
   final void Function(DateTime)? onCellTapped;
   final Color todayMarkColor;
   final Color todayTextColor;
+  final DayBorderBuilder? borderColorBuilder;
   final List<CalendarEvent> events;
+  final EventLabelOnMoreTap? onMoreTap;
 
   List<DateTime> _getCurrentDays(DateTime dateTime) {
     final List<DateTime> result = [];
@@ -202,6 +220,8 @@ class _CalendarPage extends StatelessWidget {
                   todayMarkColor: todayMarkColor,
                   todayTextColor: todayTextColor,
                   events: events,
+                  onMoreTap: onMoreTap,
+                  borderColorBuilder: borderColorBuilder
                 );
               },
             ),

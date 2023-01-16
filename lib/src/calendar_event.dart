@@ -10,6 +10,7 @@ class CalendarEvent {
     required this.eventTextStyle,
     this.eventBackgroundColor = Colors.blue,
     this.eventID,
+    this.onTap,
   });
 
   final String eventName;
@@ -17,4 +18,5 @@ class CalendarEvent {
   final DateTime eventDate;
   final String? eventID;
   final Color eventBackgroundColor;
+  final void Function(CalendarEvent)? onTap;
 }

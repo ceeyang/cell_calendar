@@ -13,6 +13,8 @@ const _eventLabelContentHeight = 13;
 const _eventLabelBottomMargin = 3;
 const _eventLabelHeight = _eventLabelContentHeight + _eventLabelBottomMargin;
 
+typedef EventLabelOnMoreTap = Function(DateTime? dateTime, List<CalendarEvent> events);
+
 /// Get events to be shown from [CalendarStateController]
 ///
 /// Shows accurate number of [_EventLabel] by the height of the parent cell
@@ -20,10 +22,12 @@ class EventLabels extends HookConsumerWidget {
   EventLabels({
     required this.date,
     required this.events,
+    this.onMoreTap,
   });
 
   final DateTime date;
   final List<CalendarEvent> events;
+  final EventLabelOnMoreTap? onMoreTap;
 
   List<CalendarEvent> _eventsOnTheDay(
       DateTime date, List<CalendarEvent> events) {
@@ -74,9 +78,26 @@ class EventLabels extends HookConsumerWidget {
               _EventLabel(
                 eventsOnTheDay[index],
               ),
-              Icon(
-                Icons.more_horiz,
-                size: 13,
+              // Icon(
+              //   Icons.more_horiz,
+              //   size: 13,
+              // ),
+              GestureDetector(
+                onTap: () {
+                  onMoreTap?.call(date,eventsOnTheDay);
+                },
+                child: Container(
+                  margin: EdgeInsets.only(right: 4, bottom: 3),
+                  height: 13,
+                  width: double.infinity,
+                  color: Colors.white,
+                  child: Text(
+                    '+${eventsOnTheDay.length-maxIndex}',
+                    style: events.first?.eventTextStyle,
+                    textAlign: TextAlign.left,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
               )
             ],
           );
@@ -96,16 +117,21 @@ class _EventLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(right: 4, bottom: 3),
-      height: 13,
-      width: double.infinity,
-      color: event.eventBackgroundColor,
-      child: Text(
-        event.eventName,
-        style: event.eventTextStyle,
-        textAlign: TextAlign.center,
-        overflow: TextOverflow.ellipsis,
+    return GestureDetector(
+      onTap: () {
+        event.onTap?.call(event);
+      },
+      child: Container(
+        margin: EdgeInsets.only(right: 4, bottom: 3),
+        height: 13,
+        width: double.infinity,
+        color: event.eventBackgroundColor,
+        child: Text(
+          event.eventName,
+          style: event.eventTextStyle,
+          textAlign: TextAlign.left,
+          overflow: TextOverflow.ellipsis,
+        ),
       ),
     );
   }

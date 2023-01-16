@@ -22,8 +22,8 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatelessWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-  final String title;
+  MyHomePage({Key? key, this.title}) : super(key: key);
+  final String? title;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +31,7 @@ class MyHomePage extends StatelessWidget {
     final cellCalendarPageController = CellCalendarPageController();
     return Scaffold(
       appBar: AppBar(
-        title: Text(title),
+        title: Text(title ?? ''),
       ),
       body: CellCalendar(
         cellCalendarPageController: cellCalendarPageController,
@@ -50,8 +50,8 @@ class MyHomePage extends StatelessWidget {
           );
         },
         monthYearLabelBuilder: (datetime) {
-          final year = datetime.year.toString();
-          final month = datetime.month.monthName;
+          final year = datetime?.year.toString();
+          final month = datetime?.month.monthName;
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 4),
             child: Row(
